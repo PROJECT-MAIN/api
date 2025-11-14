@@ -1,2 +1,2 @@
 # api
-Ce repo est le pour mon projet FastAPI 
+Ce repo est utile  pour mon projet FastAPI 
