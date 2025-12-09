@@ -5,6 +5,7 @@
 
     <groupId>com.sinbad</groupId>
     <artifactId>java-api</artifactId>
+    <!-- SNAPSHOT => ira dans le repo maven-snapshots -->
     <version>1.0.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
@@ -29,4 +30,20 @@
     <build>
         <finalName>java-api</finalName>
     </build>
+
+    <!-- ===== Déploiement vers Nexus ===== -->
+    <distributionManagement>
+        <!-- Repo pour les versions RELEASE -->
+        <repository>
+            <id>nexus-releases</id>
+            <url>http://172.24.170.242:8082/repository/maven-releases/</url>
+        </repository>
+
+        <!-- Repo pour les versions SNAPSHOT -->
+        <snapshotRepository>
+            <id>nexus-snapshots</id>
+            <url>http://172.24.170.242:8082/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
 </project>
