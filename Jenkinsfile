@@ -1,14 +1,43 @@
 pipeline {
-    agent any
+    agent any          // exécute sur n'importe quel agent disponible
+
+    // 👉 Trigger : le pipeline se lance à chaque push GitHub
     triggers {
-        // Déclenche le job à chaque push GitHub (via webhook)
         githubPush()
     }
+
     stages {
-        stage('Build & Deploy to Nexus') {
+        stage('Checkout') {
             steps {
-                // Sous Windows : utiliser 'bat'
-                bat "mvn clean deploy"
+                echo "Récupération du code depuis GitHub"
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo "Étape de build (à adapter)"
+                // Exemple :
+                // sh 'mvn clean package'
+                // ou
+                // sh 'npm install && npm test'
+            }
+        }
+
+        stage('Tests') {
+            steps {
+                echo "Étape de tests (à adapter)"
+                // Exemple :
+                // sh 'mvn test'
+            }
+        }
+
+        stage('Deploy') {
+            when {
+                branch 'main'   // exécute ce stage seulement sur la branche main
+            }
+            steps {
+                echo "Déploiement (à définir selon ton besoin)"
             }
         }
     }
