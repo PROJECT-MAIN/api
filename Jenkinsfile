@@ -1,6 +1,14 @@
 pipeline {
     agent any
 
+    options {
+        skipDefaultCheckout()   // pour éviter le double "Declarative: Checkout SCM"
+    }
+
+    tools {
+        maven 'Maven-3.9.11'     // ⚠️ même nom que dans "Global Tool Configuration"
+    }
+
     stages {
 
         stage('Checkout SCM') {
@@ -11,6 +19,7 @@ pipeline {
 
         stage('Build') {
             steps {
+                sh 'mvn -version'
                 sh 'mvn clean install -DskipTests'
             }
         }
@@ -23,14 +32,14 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh 'echo Déploiement en cours...'
+                echo 'Déploiement (placeholder, on branchera Nexus ensuite)...'
             }
         }
     }
 
     post {
         success {
-            echo "✔ Pipeline OK"
+            echo "✅ Pipeline réussi"
         }
         failure {
             echo "❌ Pipeline échoué"
