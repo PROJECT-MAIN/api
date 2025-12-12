@@ -1,44 +1,39 @@
 pipeline {
-    agent any          // exécute sur n'importe quel agent disponible
-
-    // Trigger : le pipeline se lance à chaque push GitHub
-    triggers {
-        githubPush()
-    }
+    agent any
 
     stages {
-        stage('Checkout') {
+
+        stage('Checkout SCM') {
             steps {
-                echo "Récupération du code depuis GitHub"
                 checkout scm
             }
         }
 
         stage('Build') {
             steps {
-                echo "Étape de build (à adapter)"
-                // Exemple :
-                // sh 'mvn clean package'
-                // ou
-                // sh 'npm install && npm test'
+                sh 'mvn clean install -DskipTests'
             }
         }
 
         stage('Tests') {
             steps {
-                echo "Étape de tests (à adapter)"
-                // Exemple :
-                // sh 'mvn test'
+                sh 'mvn test'
             }
         }
 
         stage('Deploy') {
-            when {
-                branch 'main'   // exécute ce stage seulement sur la branche main
-            }
             steps {
-                echo "Déploiement (à définir selon ton besoin)"
+                sh 'echo Déploiement en cours...'
             }
+        }
+    }
+
+    post {
+        success {
+            echo "✔ Pipeline OK"
+        }
+        failure {
+            echo "❌ Pipeline échoué"
         }
     }
 }
