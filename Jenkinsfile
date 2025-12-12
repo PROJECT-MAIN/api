@@ -1,7 +1,7 @@
 pipeline {
     agent any          // exécute sur n'importe quel agent disponible
 
-    // 👉 Trigger : le pipeline se lance à chaque push GitHub
+    // Trigger : le pipeline se lance à chaque push GitHub
     triggers {
         githubPush()
     }
