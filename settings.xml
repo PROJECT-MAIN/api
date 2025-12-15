@@ -8,13 +8,13 @@
     <server>
       <id>nexus-releases</id>
       <username>${env.NEXUS_USR}</username>
-      <password>${env.NEXUS_PWD}</password>
+      <password>${env.NEXUS_PSW}</password>
     </server>
 
     <server>
       <id>nexus-snapshots</id>
       <username>${env.NEXUS_USR}</username>
-      <password>${env.NEXUS_PWD}</password>
+      <password>${env.NEXUS_PSW}</password>
     </server>
   </servers>
 
