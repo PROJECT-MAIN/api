@@ -1,14 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.sinbad</groupId>
     <artifactId>java-api</artifactId>
-    <!-- SNAPSHOT => ira dans le repo maven-snapshots -->
+
+    <!--
+        SNAPSHOT  -> ira dans le repo maven-snapshots
+        RELEASE   -> ira dans le repo maven-releases
+    -->
     <version>1.0.0-SNAPSHOT</version>
+
+    <!-- Artefact principal : WAR -->
     <packaging>war</packaging>
-    <packaging>zip</packaging>
 
     <name>java-api</name>
 
@@ -28,8 +35,71 @@
         </dependency>
     </dependencies>
 
+    <!-- ===== Build : WAR + ZIP ===== -->
     <build>
         <finalName>java-api</finalName>
+
+        <plugins>
+            <!-- Plugin standard WAR (optionnel, Maven l'ajoute souvent tout seul) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                    <!-- tu peux mettre ici des options spécifiques au war si besoin -->
+                </configuration>
+            </plugin>
+
+            <!-- Plugin pour créer un ZIP et l'attacher comme artefact secondaire -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.6.0</version>
+
+                <executions>
+                    <execution>
+                        <id>make-dist-zip</id>
+                        <!-- On veut que le ZIP soit généré pendant le package -->
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <!--
+                                false => le fichier s'appellera
+                                java-api-1.0.0-SNAPSHOT.zip
+                                (et pas java-api-1.0.0-SNAPSHOT-bin.zip)
+                            -->
+                            <appendAssemblyId>false</appendAssemblyId>
+
+                            <!-- Type de livrable -->
+                            <formats>
+                                <format>zip</format>
+                            </formats>
+
+                            <!-- On attache le ZIP au projet pour qu'il soit déployé dans Nexus -->
+                            <attach>true</attach>
+
+                            <!-- Contenu du ZIP : ici le WAR généré -->
+                            <fileSets>
+                                <fileSet>
+                                    <!-- dossier target où Maven génère le war -->
+                                    <directory>${project.build.directory}</directory>
+
+                                    <!-- on inclut le war dans le zip -->
+                                    <includes>
+                                        <include>${project.build.finalName}.war</include>
+                                    </includes>
+
+                                    <!-- à la racine du zip -->
+                                    <outputDirectory>/</outputDirectory>
+                                </fileSet>
+                            </fileSets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 
     <!-- ===== Déploiement vers Nexus ===== -->
