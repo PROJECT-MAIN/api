@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -7,14 +6,7 @@
 
     <groupId>com.sinbad</groupId>
     <artifactId>java-api</artifactId>
-
-    <!--
-        SNAPSHOT  -> ira dans le repo maven-snapshots
-        RELEASE   -> ira dans le repo maven-releases
-    -->
     <version>1.0.0-SNAPSHOT</version>
-
-    <!-- Artefact principal : WAR -->
     <packaging>war</packaging>
 
     <name>java-api</name>
@@ -26,7 +18,7 @@
     </properties>
 
     <dependencies>
-        <!-- API Servlet fournie par Tomcat 9 (javax), donc en "provided" -->
+        <!-- API Servlet fournie par Tomcat 9 (javax) -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
@@ -35,86 +27,94 @@
         </dependency>
     </dependencies>
 
-    <!-- ===== Build : WAR + ZIP ===== -->
+    <!-- ============================= -->
+    <!--   SECTION BUILD + ZIP CUSTOM  -->
+    <!-- ============================= -->
     <build>
-        <finalName>java-api</finalName>
+        <finalName>java-api</finalName> <!-- nom du WAR -->
 
         <plugins>
-            <!-- Plugin standard WAR (optionnel, Maven l'ajoute souvent tout seul) -->
+
+            <!-- Plugin WAR (déjà OK) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.4.0</version>
-                <configuration>
-                    <!-- tu peux mettre ici des options spécifiques au war si besoin -->
-                </configuration>
             </plugin>
 
-            <!-- Plugin pour créer un ZIP et l'attacher comme artefact secondaire -->
+            <!-- Plugin ZIP PERSONNALISÉ -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>create-zip</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Nom EXACT du fichier ZIP souhaité -->
+                            <artifacts>
+                                <artifact>
+                                    <file>${project.build.directory}/api-api-${project.version}.zip</file>
+                                    <type>zip</type>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Plugin ASSEMBLY pour générer  le ZIP -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.6.0</version>
-
+                <version>3.3.0</version>
                 <executions>
                     <execution>
-                        <id>make-dist-zip</id>
-                        <!-- On veut que le ZIP soit généré pendant le package -->
+                        <id>make-dist</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
                         <configuration>
-                            <!--
-                                false => le fichier s'appellera
-                                java-api-1.0.0-SNAPSHOT.zip
-                                (et pas java-api-1.0.0-SNAPSHOT-bin.zip)
-                            -->
+                            <!-- NOM EXACT DU ZIP -->
+                            <finalName>api-api-${project.version}</finalName>
+
                             <appendAssemblyId>false</appendAssemblyId>
 
-                            <!-- Type de livrable -->
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+
                             <formats>
                                 <format>zip</format>
                             </formats>
-
-                            <!-- On attache le ZIP au projet pour qu'il soit déployé dans Nexus -->
-                            <attach>true</attach>
-
-                            <!-- Contenu du ZIP : ici le WAR généré -->
-                            <fileSets>
-                                <fileSet>
-                                    <!-- dossier target où Maven génère le war -->
-                                    <directory>${project.build.directory}</directory>
-
-                                    <!-- on inclut le war dans le zip -->
-                                    <includes>
-                                        <include>${project.build.finalName}.war</include>
-                                    </includes>
-
-                                    <!-- à la racine du zip -->
-                                    <outputDirectory>/</outputDirectory>
-                                </fileSet>
-                            </fileSets>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+
         </plugins>
     </build>
 
-    <!-- ===== Déploiement vers Nexus ===== -->
+    <!-- ============================= -->
+    <!--   DEPLOYMENT NEXUS           -->
+    <!-- ============================= -->
     <distributionManagement>
-        <!-- Repo pour les versions RELEASE -->
+
         <repository>
             <id>nexus-releases</id>
             <url>http://172.24.170.242:8082/repository/maven-releases/</url>
         </repository>
 
-        <!-- Repo pour les versions SNAPSHOT -->
         <snapshotRepository>
             <id>nexus-snapshots</id>
             <url>http://172.24.170.242:8082/repository/maven-snapshots/</url>
         </snapshotRepository>
+
     </distributionManagement>
 
 </project>
