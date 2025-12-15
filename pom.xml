@@ -5,8 +5,8 @@
 
     <groupId>com.sinbad</groupId>
     <artifactId>java-api</artifactId>
-    <!-- SNAPSHOT => ira dans le repo maven-snapshots -->
-    <version>1.0.0-SNAPSHOT</version>
+    <!-- SNAPSHOT => ira dans le repo maven- releases -->
+    <version>1.0.0</version>
     <packaging>war</packaging>
 
     <name>java-api</name>
