@@ -8,6 +8,7 @@
     <!-- SNAPSHOT => ira dans le repo maven-snapshots -->
     <version>1.0.0-SNAPSHOT</version>
     <packaging>war</packaging>
+    <packaging>zip</packaging>
 
     <name>java-api</name>
 
