@@ -8,7 +8,7 @@ pipeline {
 
     tools {
         // Doit correspondre au nom configuré dans "Global Tool Configuration"
-        maven 'Maven-3.9.9'
+        maven 'Maven-3.9.11'
     }
 
     environment {
@@ -40,14 +40,6 @@ pipeline {
         }
 
         stage('Deploy to Nexus') {
-            when {
-                // Optionnel : ne déployer que sur certaines branches
-                anyOf {
-                    branch 'release/1.0.0'
-                    branch 'master'
-                    branch 'main'
-                }
-            }
             steps {
                 // Déploiement : Maven va utiliser distributionManagement + settings.xml
                 sh 'mvn -s settings.xml deploy -DskipTests=true'
