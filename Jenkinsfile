@@ -1,44 +1,66 @@
 pipeline {
-    agent any          // exécute sur n'importe quel agent disponible
+    agent any
 
-    // Trigger : le pipeline se lance à chaque push GitHub
-    triggers {
-        githubPush()
+    options {
+        // On désactive le checkout automatique implicite
+        skipDefaultCheckout()
+    }
+
+    tools {
+        // Doit correspondre au nom configuré dans "Global Tool Configuration"
+        maven 'Maven-3.9.9'
+    }
+
+    environment {
+        // Lie le credential 'nexus-jenkins' à la variable NEXUS
+        // Jenkins crée automatiquement :
+        //   NEXUS_USR = username
+        //   NEXUS_PSW = password
+        NEXUS = credentials('nexus-jenkins')
     }
 
     stages {
-        stage('Checkout') {
+        stage('Checkout SCM') {
             steps {
-                echo "Récupération du code depuis GitHub"
                 checkout scm
             }
         }
 
         stage('Build') {
             steps {
-                echo "Étape de build (à adapter)"
-                // Exemple :
-                // sh 'mvn clean package'
-                // ou
-                // sh 'npm install && npm test'
+                sh 'mvn -s settings.xml clean package -DskipTests'
             }
         }
 
         stage('Tests') {
             steps {
-                echo "Étape de tests (à adapter)"
-                // Exemple :
-                // sh 'mvn test'
+                // tu peux séparer les tests unitaires ici si tu veux
+                sh 'mvn -s settings.xml test'
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy to Nexus') {
             when {
-                branch 'main'   // exécute ce stage seulement sur la branche main
+                // Optionnel : ne déployer que sur certaines branches
+                anyOf {
+                    branch 'release/1.0.0'
+                    branch 'master'
+                    branch 'main'
+                }
             }
             steps {
-                echo "Déploiement (à définir selon ton besoin)"
+                // Déploiement : Maven va utiliser distributionManagement + settings.xml
+                sh 'mvn -s settings.xml deploy -DskipTests=true'
             }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Build + Tests + Deploy OK pour la branche ${env.BRANCH_NAME}"
+        }
+        failure {
+            echo "❌ Pipeline échoué sur la branche ${env.BRANCH_NAME}"
         }
     }
 }
