@@ -7,14 +7,14 @@
   <servers>
     <server>
       <id>nexus-releases</id>
-      <username>jenkins-nexus</username>
-      <password>Rostandvanessa*2019</password>
+      <username>${env.NEXUS_USR}</username>
+      <password>${env.NEXUS_PWD}</password>
     </server>
 
     <server>
       <id>nexus-snapshots</id>
-      <username>jenkins-nexus</username>
-      <password>Rostandvanessa*2019</password>
+      <username>${env.NEXUS_USR}</username>
+      <password>${env.NEXUS_PWD}</password>
     </server>
   </servers>
 
